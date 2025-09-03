@@ -1,0 +1,80 @@
+/***************************************************
+ * IoT Robot Moving Project (Arduino + ESP8266)
+ * Controls a 2-wheel robot via IoT (Wi-Fi)
+ * Commands: F = Forward, B = Backward, L = Left,
+ *           R = Right, S = Stop
+ ***************************************************/
+
+#define ENA 5    // Motor A Enable
+#define ENB 6    // Motor B Enable
+#define IN1 7
+#define IN2 8
+#define IN3 9
+#define IN4 10
+
+String command = "";
+
+void setup() {
+  Serial.begin(9600);   // Communication with ESP8266
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+  // Set motor speed
+  analogWrite(ENA, 200); // 0-255
+  analogWrite(ENB, 200);
+
+  stopMotors();
+}
+
+void loop() {
+  if (Serial.available()) {
+    command = Serial.readStringUntil('\n');
+    command.trim();
+
+    if (command == "F") moveForward();
+    else if (command == "B") moveBackward();
+    else if (command == "L") turnLeft();
+    else if (command == "R") turnRight();
+    else if (command == "S") stopMotors();
+  }
+}
+
+// === Motor Control Functions ===
+void moveForward() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+}
+
+void moveBackward() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+}
+
+void turnLeft() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+}
+
+void turnRight() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+}
+
+void stopMotors() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+}
